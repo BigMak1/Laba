@@ -1,60 +1,54 @@
 with open('pokemon_full.json') as file:
     # Task1
 
-    string = file.read()  # Делаем из файла строку
+    string = file.read()
     chars_amount = len(string)
     print(f'1)Общее количество символов: {chars_amount}')
 
     # Task 2
 
-    chars_amount1 = 0  # Будем записывать количество символов без пробелов и знаков препинания
-    for count in string:
-        if count.isalnum():  # Находим символы, которые не являются знакоми препинания
-            chars_amount1 += 1
-    print(f'2)Общее количество символов без знаков препинания: {chars_amount1}')
+    no_punctuation = 0  # Amount of symbol without punctuation
+    for char in string:
+        if char.isalnum():
+            no_punctuation += 1
+    print(f'2)Общее количество символов без знаков препинания: {no_punctuation}')
 
     # Task 3
 
     file.seek(0)
-    suma = 0  # Будем считать количество символов в строке "description" текущего покемона
-    name = ''  # Будем записывать имя текущего покемона
-    max_suma = 0  # Будем хранить максимальное кол-во символов
-    max_name = ''  # Будем хранить имя покемона с максимальным кол-вом
-    while True:
-        line = file.readline()  # Читаем файл по строкам
-        if not line:
-            break
-        line = line.strip()  # Убираем пробелы пред строкой
+    dsc_chars = 0  # Contains number of characters in "description" section.
+    max_dsc_chars = 0
+    current_name = ''
+    max_dsc_name = ''
+    for line in file:
+        line = line.strip()  # Remove whitespase before string
         if 'name' in line:
-            name = line
+            current_name = line
         if 'description' in line:
-            suma = len(line)
-            if suma > max_suma:
-                max_suma = sum
-                max_name = name
-    max_name = max_name[9:-2:1]  # Убираем лишние символы из строки
-    print(f'3)Самое длинное описание у {max_name}')
+            dsc_chars = len(line)
+            if dsc_chars > max_dsc_chars:
+                max_dsc_chars = dsc_chars
+                max_dsc_name = current_name
+    max_dsc_name = max_dsc_name[9:-2]  # Remove needless symbol
+    print(f'3)Самое длинное описание у {max_dsc_name}')
 
     # Task 4
 
     file.seek(0)
-    counter = 0  # Заведем индификато(счетчик) того, что у нас перечисляются способности покемона
-    space = 0  # Будем записывать количество пробелов в строке со способностью
-    max_space = 0  # Будем хранить максимальное количество пробелов в строке, то есть максимальное кол-во слов
-    max_ability = ''  # Будем хранить способность с максимальным кол-вом слов
-    while True:
-        line1 = file.readline()  # Читаем файл по строкам
-        if not line1:
-            break
-        line1 = line1.strip()  # Убираем пробелы пред строкой
-        if '],' in line1:
-            counter = 0
-        if counter == 1:
-            space = line1.count(' ') - line1.count(' "')  # Вычитаем пробелы, которые идут перед ковычками
-            if space >= max_space:
-                max_space = space
-                max_ability = line1
-        if 'abilities' in line1:
-            counter = 1
-    max_ability = max_ability[1:-1]  # Убираем кавычки из ответа
-    print(f'4)Умение, которое содержит больше всего слов - это {max_ability}')
+    in_abilities = False
+    space_chars = 0  # Contains number of whitespase in string
+    max_space_chars = 0
+    max_abil_name = ''  # It's an ability with max words
+    for line in file:
+        line = line.strip()  # Remove whitespase before string
+        if '],' in line:
+            in_abilities = False
+        if in_abilities:
+            space_chars = line.count(' ') - line.count(' "')  # Subtract whitespace before current string
+            if space_chars >= max_space_chars:
+                max_space_chars = space_chars
+                max_abil_name = line
+        if 'abilities' in line:
+            in_abilities = True
+    max_abil_name = max_abil_name[1:-1]  # Remove quotation marks in final string
+    print(f'4)Умение, которое содержит больше всего слов - это {max_abil_name}')
