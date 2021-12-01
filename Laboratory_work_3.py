@@ -275,7 +275,7 @@ def writeTIFF(wordArray):
 
 
 #### main body ###
-dataFile = open('I-pixel-u.bdf').readlines()
+dataFile = open('light_pixel-7.bdf').readlines()
 bdfFontData = BdfFont()
 bdfFontData.setFontFormatParameters(dataFile)
 
