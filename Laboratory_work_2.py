@@ -60,10 +60,7 @@ def making_top(answer_list, r_file, file_reader, all_names):
                 if float(answer_list[0]) < float(row['Rating Score']):
                     if row['Name'] in top_names:
                         top_names.remove(row['Name'])
-    if answer_list[1].isdigit():
-        r_file.seek(0)
-        for row in file_reader:
-            if row['Rating Score'] != 'Rating Score' and row['Rating Score'] != 'Unknown':
+
                 if float(answer_list[1]) < float(row['Number Votes']):
                     if row['Name'] in top_names:
                         top_names.remove(row['Name'])
@@ -74,15 +71,12 @@ def making_top(answer_list, r_file, file_reader, all_names):
                 if genre not in row['Tags']:
                     if row['Name'] in top_names:
                         top_names.remove(row['Name'])
-    r_file.seek(0)
-    for row in file_reader:
-        if row['Rating Score'] != 'Rating Score':
+
             for sort in answer_list[3].split(','):
                 if sort not in row['Type']:
                     if row['Name'] in top_names:
                         top_names.remove(row['Name'])
-    for row in file_reader:
-        if row['Rating Score'] != 'Rating Score':
+
             for stu in answer_list[4].split(','):
                 if stu not in row['Studios']:
                     if row['Name'] in top_names:
@@ -91,7 +85,7 @@ def making_top(answer_list, r_file, file_reader, all_names):
 
 
 def main():
-    with open("anime.csv", encoding='utf-8') as r_file:
+    with open('anime.csv', encoding='utf-8') as r_file:
         file_reader = csv.DictReader(r_file, delimiter=",")
         all_names = []
         for name in file_reader:
