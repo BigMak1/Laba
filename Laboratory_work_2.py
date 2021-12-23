@@ -61,9 +61,10 @@ def making_top(answer_list, r_file, file_reader, all_names):
                     if row['Name'] in top_names:
                         top_names.remove(row['Name'])
 
-                if float(answer_list[1]) < float(row['Number Votes']):
-                    if row['Name'] in top_names:
-                        top_names.remove(row['Name'])
+                if answer_list[1].isdigit():
+                    if float(answer_list[1]) < float(row['Number Votes']):
+                        if row['Name'] in top_names:
+                            top_names.remove(row['Name'])
     r_file.seek(0)
     for row in file_reader:
         if row['Rating Score'] != 'Rating Score':
