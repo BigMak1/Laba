@@ -1,26 +1,94 @@
 from bdfparser import Font
+import struct
 
-data_file = Font('light_pixel-7.bdf')
+data_file = Font('light_pixel-7.bdf')  # Программа пока генерирует изображение только одного символа
+                                       # В дальнейшем добавлю для слов и фраз
 
+def write_bitmap(bitmap, width):
 
-def print_chr(list):
+    for strip in bitmap:
+        bin_string = bin(int(strip, 16))[2:]
+        if len(bin_string) < width:
+            bin_string = (width-len(bin_string)) * '0' + bin_string
+        bin_string = bin_string[:width]
+        for pixel in bin_string:
 
-    for string in list:
-        bin_string = bin(int(string, 16))[2:]
-        design_string = ''
-        for binary in bin_string:
-            if binary == '1':
-                binary = '$'
+            if pixel == '1':
+                image.write(struct.pack('>B', 0))
+                image.write(struct.pack('>B', 0))
+                image.write(struct.pack('>B', 0))
+
             else:
-                binary = ' '
-            design_string += binary
-        print(design_string)
+                image.write(struct.pack('>B', 255))
+                image.write(struct.pack('>B', 255))
+                image.write(struct.pack('>B', 255))
+
+
+def hex_to_byte(line):
+
+    while line != '':
+        num = int(line[0:4], 16)
+        image.write(struct.pack('>H', num))
+        line = line[4:]
 
 
 with open('your_word.tiff', 'wb') as image:
     data_sign = data_file.glyphs
-    word = input()
-    for letter in word:
-        chr = data_sign[ord(letter)][-1]
-        print_chr(chr)
-        print()
+    letter = input()
+
+    width = data_sign[ord(letter)][2]
+    height = data_sign[ord(letter)][3]
+
+    header = '4d4d002a0000' + hex(width * height * 3 + 8)[2:]
+    hex_to_byte(header)
+
+    bitmap = data_sign[ord(letter)][-1]
+    write_bitmap(bitmap, width)
+
+    tag_0100 = '000e0100000300000001' + hex(width)[2:]
+    hex_to_byte(tag_0100)
+    hex_to_byte('0000')
+
+    tag_0101 = '0101000300000001' + hex(height)[2:]
+    hex_to_byte(tag_0101)
+    hex_to_byte('0000')
+
+    tag_0102 = '01020003000000030000' + hex(width * height * 3 + 182)[2:]
+    hex_to_byte(tag_0102)
+
+    tag_0103 = '010300030000000100010000'
+    hex_to_byte(tag_0103)
+
+    tag_0106 = '010600030000000100020000'
+    hex_to_byte(tag_0106)
+
+    tag_0111 = '011100040000000100000008'
+    hex_to_byte(tag_0111)
+
+    tag_0112 = '011200030000000100010000'
+    hex_to_byte(tag_0112)
+
+    tag_0115 = '011500030000000100030000'
+    hex_to_byte(tag_0115)
+
+    tag_0116 = '0116000300000001' + hex(height)[2:]
+    hex_to_byte(tag_0116)
+    hex_to_byte('0000')
+
+    tag_0117 = '01170004000000010000' + hex(width * height * 3)[2:]
+    hex_to_byte(tag_0117)
+
+    tag_0118 = '01180003000000030000' + hex(width * height * 3 + 188)[2:]
+    hex_to_byte(tag_0118)
+
+    tag_0119 = '01190003000000030000' + hex(width * height * 3 + 194)[2:]
+    hex_to_byte(tag_0119)
+
+    tag_011c = '011c00030000000100010000'
+    hex_to_byte(tag_011c)
+
+    tag_0153 = '01530003000000030000' + hex(width * height * 3 + 200)[2:]
+    hex_to_byte(tag_0153)
+
+    end = '0000000000080008000800000000000000ff00ff00ff000100010001'
+    hex_to_byte(end)
